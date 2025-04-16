@@ -40,9 +40,10 @@ def calculate_metrics(answer, correct_answer):
     bleu_score = 0.0
     similarity_score = 0.0
     relevance_score = 0.0
+    correct_score = 0.0
 
     if not answer: # 回答がない場合は計算しない
-        return bleu_score, similarity_score, word_count, relevance_score
+        return bleu_score, similarity_score, word_count, relevance_score , correct_score
 
     # 単語数のカウント
     tokenizer = Tokenizer()
@@ -92,8 +93,10 @@ def calculate_metrics(answer, correct_answer):
         except Exception as e:
             # st.warning(f"関連性スコア計算エラー: {e}")
             relevance_score = 0.0 # エラー時は0
+            
+    correct_score = is_correct_score(answer, correct_answer)
 
-    return bleu_score, similarity_score, word_count, relevance_score
+    return bleu_score, similarity_score, word_count, relevance_score ,correct_score
 
 def get_metrics_descriptions():
     """評価指標の説明を返す"""
@@ -106,3 +109,22 @@ def get_metrics_descriptions():
         "関連性スコア (relevance_score)": "正解と回答の共通単語の割合。トピックの関連性を表す (0〜1の値)",
         "効率性スコア (efficiency_score)": "正確性を応答時間で割った値。高速で正確な回答ほど高スコア"
     }
+    
+def is_correct_score(reference, answer):
+    """
+    正確性スコアを3段階で評価します。
+    
+    :param reference: 正解となる参照（答え）
+    :param answer: モデルの回答
+    :return: スコア（1.0, 0.5, 0.0）
+    """
+
+    # 正確な回答を判定するルール（完全一致を目安に）
+    if answer == reference:
+        return 1.0
+    # 部分的に正しい場合の判定（たとえば、キーワード一致など）
+    elif any(word in reference for word in answer.split()):
+        return 0.5
+    # 完全に不正確な場合
+    else:
+        return 0.0
