@@ -171,3 +171,24 @@ def test_model_reproducibility(sample_data, preprocessor):
     assert np.array_equal(
         predictions1, predictions2
     ), "モデルの予測結果に再現性がありません"
+
+
+def test_model_serialization(train_model):
+    """モデルの保存と読み込み後に同等の精度が得られることを確認"""
+    model_original, X_test, y_test = train_model
+
+    # 予測精度を取得
+    original_pred = model_original.predict(X_test)
+    original_accuracy = accuracy_score(y_test, original_pred)
+
+    # モデルを読み込み直す
+    with open(MODEL_PATH, "rb") as f:
+        loaded_model = pickle.load(f)
+
+    loaded_pred = loaded_model.predict(X_test)
+    loaded_accuracy = accuracy_score(y_test, loaded_pred)
+
+    # 精度がほぼ同一であることを確認
+    assert np.isclose(
+        original_accuracy, loaded_accuracy, atol=1e-6
+    ), f"読み込み後の精度が異なります: {loaded_accuracy} vs {original_accuracy}"
