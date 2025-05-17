@@ -172,6 +172,7 @@ def test_model_reproducibility(sample_data, preprocessor):
         predictions1, predictions2
     ), "モデルの予測結果に再現性がありません"
 
+
 def test_model_serialization(train_model):
     """モデルの保存と読み込み後に同等の精度が得られることを確認"""
     model_original, X_test, y_test = train_model

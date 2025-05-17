@@ -135,22 +135,29 @@ def test_data_minimum_size(sample_data):
     """学習に必要な最低限の行数があるか確認"""
     min_required_rows = 500
     actual_rows = len(sample_data)
-    assert actual_rows >= min_required_rows, f"❌ 行数が少なすぎます（{actual_rows}行）: 最低でも {min_required_rows} 行が必要です"
+    assert (
+        actual_rows >= min_required_rows
+    ), f"❌ 行数が少なすぎます（{actual_rows}行）: 最低でも {min_required_rows} 行が必要です"
 
 
 def test_no_unexpected_categories(sample_data):
     """カテゴリカラムに予期しない値が含まれていないか確認"""
     expected_sex = {"male", "female"}
     expected_embarked = {"C", "Q", "S", ""}
-    
+
     sex_unique = set(sample_data["Sex"].dropna().unique())
     embarked_unique = set(sample_data["Embarked"].dropna().unique())
-    
+
     unexpected_sex = sex_unique - expected_sex
     unexpected_embarked = embarked_unique - expected_embarked
 
-    assert not unexpected_sex, f"❌ 'Sex' カラムに予期しない値があります: {unexpected_sex}"
-    assert not unexpected_embarked, f"❌ 'Embarked' カラムに予期しない値があります: {unexpected_embarked}"
+    assert (
+        not unexpected_sex
+    ), f"❌ 'Sex' カラムに予期しない値があります: {unexpected_sex}"
+    assert (
+        not unexpected_embarked
+    ), f"❌ 'Embarked' カラムに予期しない値があります: {unexpected_embarked}"
+
 
 def test_no_duplicate_rows(sample_data):
     """重複行が存在しないことを確認"""
